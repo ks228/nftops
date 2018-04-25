@@ -13,11 +13,11 @@
 #include "nft_ops.h"
 
 int main() {
-	nft_vmap_elem_do(NFT_VMAP_ADD_ELEM, "2001::11", "2001::12", "natcap", "natcap_vmap", 1);	
+	nft_concat_vmap_elem_do(NFT_VMAP_ADD_ELEM, "2001::11", "2001::12", "natcap", "concat_vmap", 1);	
 	return 0;
 }
 
-int nft_vmap_elem_do(int action, const char* cip, const char* eip, const char* table, const char* vmap, int verdict)
+int nft_concat_vmap_elem_do(int action, const char* cip, const char* eip, const char* table, const char* vmap, int verdict)
 {
 	struct mnl_socket *nl;
 	char buf[MNL_SOCKET_BUFFER_SIZE];
@@ -62,7 +62,7 @@ int nft_vmap_elem_do(int action, const char* cip, const char* eip, const char* t
 	mnl_nlmsg_batch_next(batch);
 	switch(action){
 		case NFT_VMAP_ADD_ELEM:
-			nft_vmap_elem_do(NFT_VMAP_DEL_ELEM, cip, eip, table, vmap, verdict);
+			nft_concat_vmap_elem_do(NFT_VMAP_DEL_ELEM, cip, eip, table, vmap, verdict);
 			nlh = nftnl_nlmsg_build_hdr(mnl_nlmsg_batch_current(batch),
 				    NFT_MSG_NEWSETELEM, family,
 				    NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,

@@ -14,11 +14,11 @@
 
 int main() {
 	int i = 1;
-	nft_map_elem_do(NFT_MAP_ADD_ELEM, "2002::13", "2002::14", "natcap", "simplemap");	
+	nft_simple_vmap_elem_do(NFT_MAP_ADD_ELEM, "2002::13", "natcap", "simplemap", 1);	
 	return 0;
 }
 
-int nft_map_elem_do(int action, const char* key, const char* val, const char* table, const char* map)
+int nft_simple_vmap_elem_do(int action, const char* key, const char* table, const char* map, int verdict)
 {
 	struct mnl_socket *nl;
 	char buf[MNL_SOCKET_BUFFER_SIZE];
@@ -47,11 +47,10 @@ int nft_map_elem_do(int action, const char* key, const char* val, const char* ta
 		exit(EXIT_FAILURE);
 	}
 
-	struct sockaddr_in6 sa1,sa2;
-	inet_pton(AF_INET6, key, &(sa1.sin6_addr));
-	inet_pton(AF_INET6, val, &(sa2.sin6_addr));
-	nftnl_set_elem_set(e, NFTNL_SET_ELEM_KEY, &(sa1.sin6_addr), 16);
-	nftnl_set_elem_set(e, NFTNL_SET_ELEM_DATA, &(sa2.sin6_addr), 16);
+	struct sockaddr_in6 sa;
+	inet_pton(AF_INET6, key, &(sa.sin6_addr));
+	nftnl_set_elem_set(e, NFTNL_SET_ELEM_KEY, &(sa.sin6_addr), 16);
+	nftnl_set_elem_set(e, NFTNL_SET_ELEM_DATA, &verdict, sizeof(int));
 	nftnl_set_elem_add(s, e);
 
 	batch = mnl_nlmsg_batch_start(buf, sizeof(buf));
@@ -60,7 +59,7 @@ int nft_map_elem_do(int action, const char* key, const char* val, const char* ta
 	mnl_nlmsg_batch_next(batch);
 	switch(action){
 		case NFT_MAP_ADD_ELEM:
-			nft_map_elem_do(NFT_MAP_DEL_ELEM, key, val, table, map);
+			nft_simple_vmap_elem_do(NFT_MAP_DEL_ELEM, key, table, map, verdict);
 			nlh = nftnl_nlmsg_build_hdr(mnl_nlmsg_batch_current(batch),
 				    NFT_MSG_NEWSETELEM, family,
 				    NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK,

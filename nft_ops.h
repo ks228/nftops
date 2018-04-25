@@ -14,10 +14,10 @@
 * @map The map in the nft table to add element to
 
 **/
-int nft_map_elem_do(int action, const char* key,
-			const char* val,
+int nft_simple_vmap_elem_do(int action, const char* key,
 			const char* table,
-			const char* map);
+			const char* map,
+			int verdict);
 /*
 * \brief This function will add or delete elements from the nft vmap or verdict map. NFT vmap functionaity is used to do filtering.
 * @action 0=ADD, 1=DELETE
@@ -27,7 +27,7 @@ int nft_map_elem_do(int action, const char* key,
 * @vmap The vmap in the nft table to add element to
 * @verdict ACCEPT | DROP
 **/
-int nft_vmap_elem_do(int action, const char* cip,
+int nft_concat_vmap_elem_do(int action, const char* cip,
 			const char* eip,
 			const char* table,
 			const char* vmap,
